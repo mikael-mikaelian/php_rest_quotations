@@ -9,7 +9,7 @@ class Author {
     public $author;
 
     public function __construct($db) {
-        $this->connection = $db
+        $this->connection = $db;
     }
 
     // Get Authors

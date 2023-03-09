@@ -9,11 +9,14 @@ if ($method === 'OPTIONS') {
     exit();
 }
 
-include_once '../../config/Database.php';
-include_once '../../models/Author.php';
+
+require_once '../config/Database.php';
+require_once '../models/Author.php';
+
 
 $database = new Database();
 $db = $database->connect();
+
 
 $author = new Author($db);
 

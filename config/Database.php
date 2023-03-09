@@ -1,25 +1,24 @@
 <?php
     class Database {
         private $host = 'localhost';
+        private $port = '5432';
         private $db_name = 'quotesdb';
-        private $username = 'root';
+        private $username = 'mikaelmikaelian';
+        private $password = '';
         private $connection;
 
         // DB Connect
         public function connect() {
-            $this->connection = null;
+        $this->connection = null;
+        $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name}";
+        try {
 
-            try {
-                $this->connection = new PDO("mysql:host={$this->host};dbname={$this->db_name}", $this->username);
-                $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection = new PDO($dsn, $this->username, $this->password);
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            } catch(PDOException $error) {
-                $error_message = 'Database Error: ';
-                $error_message .= $error->getMessage();
-                echo $error_message;
-                exit('Unable to connect to the database');
-            }
-
+        } catch (PDOException $e) {
+            echo 'Connection Error: ' . $e->getMessage();
+        }
             return $this->connection;
         }
     }
