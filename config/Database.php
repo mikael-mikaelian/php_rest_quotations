@@ -1,18 +1,28 @@
 <?php
     class Database {
-        private $host = 'localhost';
-        private $port = '5432';
-        private $db_name = 'quotesdb';
-        private $username = 'mikaelmikaelian';
-        private $password = '';
+        private $host;
+        private $port;
+        private $dbname;
+        private $username;
+        private $password;
         private $connection;
 
+        public function __construct() {
+            $this->host = getenv('HOST');
+            $this->port = getenv('PORT');
+            $this->dbname = getenv('DBNAME');
+            $this->username = getenv('USERNAME');
+            $this->password = getenv('PASSWORD');
+        }
         // DB Connect
         public function connect() {
-        $this->connection = null;
-        $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name}";
-        try {
 
+        if ($this->connection){
+          return $this->connection;
+        } else {
+        $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname}";
+
+        try {
             $this->connection = new PDO($dsn, $this->username, $this->password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -21,5 +31,6 @@
         }
             return $this->connection;
         }
+    }
     }
 ?>
