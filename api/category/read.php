@@ -11,40 +11,40 @@ if ($method === 'OPTIONS') {
 
 
 require_once '../../config/Database.php';
-require_once '../../models/Author.php';
+require_once '../../models/Category.php';
 
 $database = new Database();
 $db = $database->connect();
 
 
-$author = new Author($db);
+$category = new category($db);
 
-$result = $author->read();
+$result = $category->read();
 
 $num = $result->rowCount();
 
 if($num > 0) {
-    $authors_arr = array();
-    $authors_arr['data'] = array();
+    $categories_arr = array();
+    $categories_arr['data'] = array();
 
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
 
-        $author_item = array (
+        $category_item = array (
             'id' => $id,
-            'author' => $author
+            'category' => $category
         );
 
         //Push to "data"
-        array_push($authors_arr['data'], $author_item);
+        array_push($categories_arr['data'], $category_item);
     }
 
     //Turn to JSON and output
 
-    echo json_encode($authors_arr);
+    echo json_encode($categories_arr);
 
 } else {
-    //No Authors
-    echo json_encode (array('message' => 'author_id Not Found'));
+    //No Categories
+    echo json_encode (array('message' => 'category_id Not Found'));
 }
 ?>

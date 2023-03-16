@@ -13,22 +13,31 @@ if ($method === 'OPTIONS') {
 }
 
 require_once '../../config/Database.php';
-require_once '../../models/Author.php';
+require_once '../../models/Category.php';
+
 
 $database = new Database();
 $db = $database->connect();
 
 // Instantiate athor obgect
-$author = new Author($db);
+$category = new Category($db);
 
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
 // Set ID to update
 
-$author->id = $data->id;
+$category->id = $data->id;
 
-//Delete author
-$result = $author->delete();
-echo ($result);
+//Delete category
+if ($category->delete()) {
+    echo json_encode (
+        array('message' => 'Category Deleted')
+    );
+
+} else {
+    echo json_encode(
+        array('message' => 'Category Not Deleted')
+    );
+}
 ?>

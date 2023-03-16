@@ -11,34 +11,31 @@ if ($method === 'OPTIONS') {
 
 
 require_once '../../config/Database.php';
-require_once '../../models/Author.php';
+require_once '../../models/Category.php';
 
 
 $database = new Database();
 $db = $database->connect();
 
 
-$author = new Author($db);
+$category = new Category($db);
 
 //Get ID
-$author->id = isset($_GET['id']) ? $_GET['id'] : die();
+$category->id = isset($_GET['id']) ? $_GET['id'] : die();
 
 
-//Get author
-if ($author->read_single()) {
+//Get category
+if ($category->read_single()) {
 
     // Create array
-
-    $author_arr = array (
-    'id' => $author->id,
-    'author' => $author->author,
+    $category_arr = array (
+        'id' => $category->id,
+        'category' => $category->category,
     );
 
     //Convert to JSON
-    print_r(json_encode($author_arr));
-
+    print_r(json_encode($category_arr));
 } else {
-    echo json_encode (array('message' => 'author_id Not Found'));
+    echo json_encode (array('message' => 'cateogry_id Not Found'));
 }
-
 ?>

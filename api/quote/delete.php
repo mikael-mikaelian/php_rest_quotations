@@ -13,22 +13,31 @@ if ($method === 'OPTIONS') {
 }
 
 require_once '../../config/Database.php';
-require_once '../../models/Author.php';
+require_once '../../models/Quote.php';
+
 
 $database = new Database();
 $db = $database->connect();
 
 // Instantiate athor obgect
-$author = new Author($db);
+$quote = new Quote($db);
 
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
 // Set ID to update
 
-$author->id = $data->id;
+$quote->id = $data->id;
 
-//Delete author
-$result = $author->delete();
-echo ($result);
+//Delete quote
+if ($quote->delete()) {
+    echo json_encode (
+        array('message' => 'Quote Deleted')
+    );
+
+} else {
+    echo json_encode(
+        array('message' => 'Quote Not Deleted')
+    );
+}
 ?>

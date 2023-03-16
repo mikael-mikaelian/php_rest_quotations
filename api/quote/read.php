@@ -11,40 +11,43 @@ if ($method === 'OPTIONS') {
 
 
 require_once '../../config/Database.php';
-require_once '../../models/Author.php';
+require_once '../../models/Quote.php';
+
+
 
 $database = new Database();
 $db = $database->connect();
 
 
-$author = new Author($db);
+$quote = new Quote($db);
 
-$result = $author->read();
+$result = $quote->read();
 
 $num = $result->rowCount();
 
 if($num > 0) {
-    $authors_arr = array();
-    $authors_arr['data'] = array();
+    $quotes_arr = array();
+    $quotes_arr['data'] = array();
 
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
 
-        $author_item = array (
+        $quote_item = array (
             'id' => $id,
-            'author' => $author
+            'quote' => $quote,
+            'author' => $author,
+			'category' => $category
         );
 
         //Push to "data"
-        array_push($authors_arr['data'], $author_item);
+        array_push($quotes_arr['data'], $quote_item);
     }
 
     //Turn to JSON and output
 
-    echo json_encode($authors_arr);
-
+    echo json_encode($quotes_arr);
 } else {
-    //No Authors
-    echo json_encode (array('message' => 'author_id Not Found'));
+    //No Categories
+    echo json_encode (array('message' => 'No Quotes Found'));
 }
 ?>

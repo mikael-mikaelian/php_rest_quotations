@@ -1,23 +1,23 @@
 <?php
-class Author {
+class category {
     // DB
     private $connection;
-    private $table = 'authors';
+    private $table = 'categories';
 
-    //Author properties
+    //category properties
     public $id;
-    public $author;
+    public $category;
 
     public function __construct($db) {
         $this->connection = $db;
     }
 
-    // Get Authors
+    // Get categorys
     public function read() {
         // Create query
         $query = 'SELECT 
                 id,
-                author
+                category
             FROM
                 ' . $this->table . '
         ';
@@ -30,13 +30,13 @@ class Author {
 
     }
 
-    // Get single author
+    // Get single Category
 
     public function read_single() {
         // Create query
         $query = 'SELECT 
                 id,
-                author
+                category
             FROM
                 ' . $this->table . '
             WHERE
@@ -56,33 +56,34 @@ class Author {
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         //Set properties
-        $this->author = $row['author'];
+        $this->category = $row['category'];
 
-        if ($this->author !== null) {
+        if ($this->category !== null) {
             return $statement;
         } else {
             return false;
         }
+
     }
 
-    //Create author
+    //Create category
     public function create() {
         
-        if (!isset($this->author)) {
+        if (!isset($this->category)) {
             return false;
         }
 
         //create query
-        $query = 'INSERT INTO ' . $this->table . ' (author) VALUES (:author)';
+        $query = 'INSERT INTO ' . $this->table . ' (category) VALUES (:category)';
         
         //Prepare statement
         $statement = $this->connection->prepare($query);
     
         // Clean data
-        $this->author = htmlspecialchars(strip_tags($this->author));
+        $this->category = htmlspecialchars(strip_tags($this->category));
     
         // Bind data
-        $statement->bindParam(':author', $this->author);
+        $statement->bindParam(':category', $this->category);
 
         //Ececute query
         if ($statement->execute()) {
@@ -93,19 +94,19 @@ class Author {
         }
     }
 
-    //Update author
+    //Update Category
     public function update() {
         
-        if (!isset($this->author) || !isset($this->id)) {
+        if (!isset($this->category) || !isset($this->id)) {
             return json_encode(array(
-                'message' => 'Missing Required Parameters',
+                'message' => 'Missing Required Parameters'
             ));
         }
 
         // Check if id exists
-        if($this->idIsNotExist()) {
+        if(idIsNotExit){
             return json_encode(array(
-                'message' => 'author_id Not Found',
+                'message' => 'category_id Not Found',
             ));
         }
 
@@ -113,7 +114,7 @@ class Author {
         $query = 'UPDATE ' .
 				$this->table . '
 			SET
-				author = :author
+				category = :category
 			WHERE
 				id = :id';
         
@@ -122,20 +123,18 @@ class Author {
     
         // Clean data
         $this->id = htmlspecialchars(strip_tags($this->id));
-        $this->author = htmlspecialchars(strip_tags($this->author));
+        $this->category = htmlspecialchars(strip_tags($this->category));
     
         // Bind data
-        $statement->bindParam(':author', $this->author);
+        $statement->bindParam(':category', $this->category);
         $statement->bindParam(':id', $this->id);
 
 
         //Ececute query
         if ($statement->execute()) {
             return json_encode(array(
-                'updated author' => array(
-                    'id' => $this->id,
-                    'author' => $this->author
-                )
+                'id' => $this->id,
+                'category' => $this->category
             ));
         } else {
             return $statement->errorInfo();
@@ -143,20 +142,19 @@ class Author {
     }
 
 
-    //Delete author
+    //Delete category
+
     public function delete() {
-        
+
         if (!isset($this->id)) {
             return json_encode(array(
-                'message' => 'Missing Required Parameters',
+                'message' => 'Missing Required Parameters'
             ));
         }
 
-        if($this->idIsNotExist()) {
-            return json_encode(array(
-                'message' => 'author_id Not Found',
-            ));
-        }
+        return json_encode(array(
+            'message' => 'category_id Not Found',
+        ));
 
         // Create query
         $query = 'DELETE FROM ' .
@@ -175,7 +173,7 @@ class Author {
         //Ececute query
         if ($statement->execute()) {
             return json_encode(array(
-                'id of deleted author' => $this->id
+                'id of deleted category' => $this->id
             ));
         } else {
             echo($statement->errorInfo());
@@ -183,18 +181,19 @@ class Author {
         
     }
 
-    private function idIsNotExist() {
-        $author_query = 'SELECT id FROM authors WHERE id = :id';
-        $author_statement = $this->connection->prepare($author_query);
-        $author_statement->bindParam(':id', $this->id);
-        $author_statement->execute();
-        $author_result = $author_statement->fetch(PDO::FETCH_ASSOC);
+    private function idIsNotExit(){
+        $category_query = 'SELECT id FROM categories WHERE id = :id';
+        $category_statement = $this->connection->prepare($category_query);
+        $category_statement->bindParam(':id', $this->id);
+        $category_statement->execute();
+        $category_result = $category_statement->fetch(PDO::FETCH_ASSOC);
 
-        if (!$author_result) {
+        if (!$category_result) {
             return true;
         }
 
         return false;
+
     }
 }
 ?>

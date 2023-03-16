@@ -30,12 +30,15 @@ $author->author = $data->author;
 //Create author
 if ($author->create()) {
     echo json_encode (
-        array('message' => 'Author Added')
+        array('author created' => array (
+            'id' => $author->id,
+            'author' => $author->author
+        ))
     );
 
 } else {
     echo json_encode(
-        array('message' => 'Author Not Added')
+        array('message' => 'Missing Required Parameters')
     );
 }
 ?>
