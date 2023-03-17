@@ -95,10 +95,10 @@ class Quote {
             
         }
         
-        if (isset($_GET['categoryId']) && isset($_GET['authorId'])) {
+        if (isset($_GET['category_id']) && isset($_GET['author_id'])) {
             //set category_id and author_id
-            $this->category_id = $_GET['categoryId'];
-            $this->author_id = $_GET['authorId'];
+            $this->category_id = $_GET['category_id'];
+            $this->author_id = $_GET['author_id'];
 
             // Create query
             $query = 'SELECT
@@ -149,10 +149,10 @@ class Quote {
 
 
         //GET by author_id
-        if (isset($_GET['authorId'])) {
+        if (isset($_GET['author_id'])) {
             
             //Set author_id
-            $this->author_id = $_GET['authorId'];
+            $this->author_id = $_GET['author_id'];
 
             //Create query
             $query = 'SELECT
@@ -201,10 +201,10 @@ class Quote {
         }
 
         //GET by category_id
-        if (isset($_GET['categoryId'])) {
+        if (isset($_GET['category_id'])) {
 
             //set category_id
-            $this->category_id = $_GET['categoryId'];
+            $this->category_id = $_GET['category_id'];
 
             // Create query
             $query = 'SELECT
@@ -257,7 +257,7 @@ class Quote {
     //Create author
     public function create() {
         
-        if (!isset($this->category_id) and !isset($this->author_id) and !isset($this->quote)) {
+        if (!isset($this->category_id) || !isset($this->author_id) || !isset($this->quote)) {
             return json_encode(array(
                 'message' => 'Missing Required Parameters',
             ));
@@ -314,12 +314,11 @@ class Quote {
             $this->id = $this->connection->lastInsertId();
             $result = 
                 json_encode (
-                    array("created quote" => array(
+                    array(
                         'id' => $this->id,
                         'quote' => $this->quote,
                         'author_id' => $this->author_id,
                         'category_id' => $this->category_id
-                        )
                     )
                 );
             return $result;
@@ -331,10 +330,50 @@ class Quote {
     //Update author
     public function update() {
         
-        if (!isset($this->id)) {
-            return "Quote is not set.";
+        if (!isset($this->category_id) || !isset($this->author_id) || !isset($this->quote)) {
+            return json_encode(array(
+                'message' => 'Missing Required Parameters',
+            ));
         }
 
+      // Check if id exists
+        $id_query = 'SELECT id FROM quotes WHERE id = :id';
+        $id_statement = $this->connection->prepare($id_query);
+        $id_statement->bindParam(':id', $this->id);
+        $id_statement->execute();
+        $id_result = $id_statement->fetch(PDO::FETCH_ASSOC);
+      
+        // Check if author_id exists
+        $author_query = 'SELECT id FROM authors WHERE id = :author_id';
+        $author_statement = $this->connection->prepare($author_query);
+        $author_statement->bindParam(':author_id', $this->author_id);
+        $author_statement->execute();
+        $author_result = $author_statement->fetch(PDO::FETCH_ASSOC);
+
+        // Check if category_id exists
+        $category_query = 'SELECT id FROM categories WHERE id = :category_id';
+        $category_statement = $this->connection->prepare($category_query);
+        $category_statement->bindParam(':category_id', $this->category_id);
+        $category_statement->execute();
+        $category_result = $category_statement->fetch(PDO::FETCH_ASSOC);
+
+
+        //Return Error Messages
+
+        if (!$author_result) {
+            return json_encode(array(
+                'message' => 'author_id Not Found',
+            ));
+        } else if (!$category_result) {
+            return json_encode(array(
+                'message' => 'category_id Not Found'
+            ));
+        } else if (!$id_result) {
+            return json_encode(array(
+                'message' => 'No Quotes Found'
+            ));
+        }
+      
         //create query
         $query = 'UPDATE ' .
 				$this->table . '
@@ -363,9 +402,16 @@ class Quote {
 
         //Ececute query
         if ($statement->execute()) {
-            return true;
+            return json_encode(
+              array(
+                        'id' => $this->id,
+                        'quote' => $this->quote,
+                        'author_id' => $this->author_id,
+                        'category_id' => $this->category_id
+                    )
+            );
         } else {
-            return $statement->errorInfo();
+            echo($statement->errorInfo());
         }
     }
 
@@ -373,6 +419,19 @@ class Quote {
     //Delete author
 
     public function delete() {
+        
+        if (!isset($this->id)) {
+            return json_encode(array(
+                'message' => 'Missing Required Parameters',
+            ));
+        }
+
+        if($this->idIsNotExist()) {
+            return json_encode(array(
+                'message' => 'No Quotes Found',
+            ));
+        }
+
         // Create query
         $query = 'DELETE FROM ' .
 				$this->table .
@@ -389,12 +448,28 @@ class Quote {
 
         //Ececute query
         if ($statement->execute()) {
-            return true;
+            return json_encode(array(
+                'id' => $this->id
+            ));
         } else {
-            return false;
+            echo($statement->errorInfo());
         }
         
     }
+
+        private function idIsNotExist() {
+        $id_query = 'SELECT id FROM quotes WHERE id = :id';
+        $id_statement = $this->connection->prepare($id_query);
+        $id_statement->bindParam(':id', $this->id);
+        $id_statement->execute();
+        $id_result = $id_statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$id_result) {
+            return true;
+        }
+
+        return false;
+      }
 
 
 }

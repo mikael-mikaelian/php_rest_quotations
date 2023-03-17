@@ -11,43 +11,39 @@ if ($method === 'OPTIONS') {
 
 
 require_once '../../config/Database.php';
-require_once '../../models/Quote.php';
-
-
+require_once '../../models/Category.php';
 
 $database = new Database();
 $db = $database->connect();
 
 
-$quote = new Quote($db);
+$category = new category($db);
 
-$result = $quote->read();
+$result = $category->read();
 
 $num = $result->rowCount();
 
 if($num > 0) {
-    $quotes_arr = array();
-    $quotes_arr['data'] = array();
+    $categories_arr = array();
 
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
 
-        $quote_item = array (
+        $category_item = array (
             'id' => $id,
-            'quote' => $quote,
-            'author' => $author,
-			'category' => $category
+            'category' => $category
         );
 
         //Push to "data"
-        array_push($quotes_arr['data'], $quote_item);
+        array_push($categories_arr, $category_item);
     }
 
     //Turn to JSON and output
 
-    echo json_encode($quotes_arr);
+    echo json_encode($categories_arr);
+
 } else {
     //No Categories
-    echo json_encode (array('message' => 'No Quotes Found'));
+    echo json_encode (array('message' => 'category_id Not Found'));
 }
 ?>

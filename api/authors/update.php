@@ -1,7 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: PUT');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -13,25 +13,28 @@ if ($method === 'OPTIONS') {
 }
 
 require_once '../../config/Database.php';
-require_once '../../models/Quote.php';
+require_once '../../models/Author.php';
 
 
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate Quote obgect
-$quote = new Quote($db);
+// Instantiate athor obgect
+$author = new Author($db);
 
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
-$quote->id = $data->id;
-$quote->quote = $data->quote;
-$quote->author_id = $data->author_id;
-$quote->category_id = $data->category_id;
+// Set ID to update
 
-//Create Quote
-$result = $quote->create();
-echo ($result);
+if(isset($data->id)){
+$author->id = $data->id;
+}
+if(isset($data->author)){
+$author->author = $data->author;
+}
 
+//Update author
+$result = $author->update();
+echo($result);
 ?>

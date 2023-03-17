@@ -1,6 +1,9 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header('Access-Control-Allow-Methods: PUT');
+header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'OPTIONS') {
@@ -9,7 +12,6 @@ if ($method === 'OPTIONS') {
     exit();
 }
 
-
 require_once '../../config/Database.php';
 require_once '../../models/Category.php';
 
@@ -17,25 +19,23 @@ require_once '../../models/Category.php';
 $database = new Database();
 $db = $database->connect();
 
-
+// Instantiate athor obgect
 $category = new Category($db);
 
-//Get ID
-$category->id = isset($_GET['id']) ? $_GET['id'] : die();
+// Get raw posted data
+$data = json_decode(file_get_contents("php://input"));
 
+// Set ID to update
 
-//Get category
-if ($category->read_single()) {
-
-    // Create array
-    $category_arr = array (
-        'id' => $category->id,
-        'category' => $category->category,
-    );
-
-    //Convert to JSON
-    print_r(json_encode($category_arr));
-} else {
-    echo json_encode (array('message' => 'cateogry_id Not Found'));
+if (isset($data->id)){
+$category->id = $data->id;
 }
+
+if (isset($data->category)){
+$category->category = $data->category;
+}
+
+//Update category
+$result = $category->update();
+echo ($result);
 ?>

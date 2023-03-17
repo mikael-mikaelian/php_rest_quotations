@@ -1,7 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: DELETE');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -13,32 +13,31 @@ if ($method === 'OPTIONS') {
 }
 
 require_once '../../config/Database.php';
-require_once '../../models/Author.php';
+require_once '../../models/Category.php';
 
 
 $database = new Database();
 $db = $database->connect();
 
 // Instantiate athor obgect
-$author = new Author($db);
+$category = new Category($db);
 
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
-$author->author = $data->author;
+// Set ID to update
 
-//Create author
-if ($author->create()) {
+$category->id = $data->id;
+
+//Delete category
+if ($category->delete()) {
     echo json_encode (
-        array('author created' => array (
-            'id' => $author->id,
-            'author' => $author->author
-        ))
+        array('id' => $category->id)
     );
 
 } else {
     echo json_encode(
-        array('message' => 'Missing Required Parameters')
+        array('message' => 'Category Not Deleted')
     );
 }
 ?>

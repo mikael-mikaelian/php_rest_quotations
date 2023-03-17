@@ -56,9 +56,8 @@ class Author {
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         //Set properties
-        $this->author = $row['author'];
-
-        if ($this->author !== null) {
+        if (is_array($row)) {
+            $this->author = $row['author'];
             return $statement;
         } else {
             return false;
@@ -89,7 +88,7 @@ class Author {
             $this->id = $this->connection->lastInsertId();
             return true;
         } else {
-            return $statement->errorInfo();
+            return false;
         }
     }
 
@@ -132,11 +131,10 @@ class Author {
         //Ececute query
         if ($statement->execute()) {
             return json_encode(array(
-                'updated author' => array(
                     'id' => $this->id,
                     'author' => $this->author
                 )
-            ));
+            );
         } else {
             return $statement->errorInfo();
         }
@@ -175,7 +173,7 @@ class Author {
         //Ececute query
         if ($statement->execute()) {
             return json_encode(array(
-                'id of deleted author' => $this->id
+                'id' => $this->id
             ));
         } else {
             echo($statement->errorInfo());

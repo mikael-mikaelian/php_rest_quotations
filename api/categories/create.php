@@ -1,7 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
-header('Access-Control-Allow-Methods: PUT');
+header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -13,38 +13,33 @@ if ($method === 'OPTIONS') {
 }
 
 require_once '../../config/Database.php';
-require_once '../../models/Quote.php';
+require_once '../../models/Category.php';
 
 
 $database = new Database();
 $db = $database->connect();
 
 // Instantiate athor obgect
-$quote = new Quote($db);
+$category = new Category($db);
 
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
-// Set ID to update
+if(isset($data->category)){
+$category->category = $data->category;
+}
 
-$quote->id = $data->id;
-
-$quote->quote = $data->quote;
-
-$quote->author_id = $data->author_id;
-
-$quote->category_id = $data->category_id;
-
-
-//Update category
-if ($quote->update()) {
+//Create Category
+if ($category->create()) {
     echo json_encode (
-        array('message' => 'Quote Updated')
+        array(
+            'id' => $category->id,
+            'category' => $category->category
+        )
     );
-
 } else {
     echo json_encode(
-        array('message' => 'Quote Not Updated')
+        array('message' => 'Missing Required Parameters')
     );
 }
 ?>

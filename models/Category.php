@@ -56,9 +56,8 @@ class category {
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         //Set properties
-        $this->category = $row['category'];
-
-        if ($this->category !== null) {
+        if (is_array($row)) {
+            $this->category = $row['category'];
             return $statement;
         } else {
             return false;
@@ -90,7 +89,7 @@ class category {
             $this->id = $this->connection->lastInsertId();
             return true;
         } else {
-            return $statement->errorInfo();
+            echo($statement->errorInfo());
         }
     }
 
@@ -104,7 +103,7 @@ class category {
         }
 
         // Check if id exists
-        if(idIsNotExit){
+        if($this->idIsNotExit()){
             return json_encode(array(
                 'message' => 'category_id Not Found',
             ));
@@ -173,10 +172,11 @@ class category {
         //Ececute query
         if ($statement->execute()) {
             return json_encode(array(
-                'id of deleted category' => $this->id
+                'id' => $this->id
             ));
         } else {
             echo($statement->errorInfo());
+            return false;
         }
         
     }
