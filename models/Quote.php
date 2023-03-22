@@ -280,12 +280,7 @@ class Quote {
 
         //Return Error Messages
 
-        if (!$author_result && !$category_result) {
-            return json_encode(array(
-                array('message' => 'author_id Not Found'),
-                array('message' => 'category_id Not Found')
-            ));
-        } else if (!$author_result) {
+        if (!$author_result) {
             return json_encode(array(
                 'message' => 'author_id Not Found',
             ));

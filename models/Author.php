@@ -31,7 +31,6 @@ class Author {
     }
 
     // Get single author
-
     public function read_single() {
         // Create query
         $query = 'SELECT 
